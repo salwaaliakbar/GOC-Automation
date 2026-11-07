@@ -1,0 +1,10 @@
+# GOC Register Data Collector - Python dependencies
+requests>=2.31
+beautifulsoup4>=4.12
+lxml>=5.0
+openpyxl>=3.1
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart>=0.0.9
+# tests
+pytest>=8.0
