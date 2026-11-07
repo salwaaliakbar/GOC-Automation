@@ -7,7 +7,8 @@ Workbook layout written by :func:`save_workbook`:
 
 * ``GOC Register`` - the deliverable: columns A-E exactly
   ``GOC No. | Name | Town | Date Registered | Practice Address``, one row per
-  GOC number from the first number to the highest registered number.
+  GOC number from the first number to the last number checked (once the
+  collection has finished: to the highest registered number).
 * ``Collection Status`` - processing status of every number, so that a
   collection can also be resumed from the Excel file alone (e.g. on a new
   computer without the database file).
@@ -79,9 +80,10 @@ def _header(ws, names, widths) -> None:
 def build_workbook(store: RecordStore, prefix: str = gn.DEFAULT_PREFIX) -> Workbook:
     """Build the workbook from a snapshot of the store (write-only mode: fast and
     memory-friendly for tens of thousands of rows)."""
-    lo, hi = store.seq_bounds(prefix)
-    stats = store.stats(prefix)
     verified = store.meta.get("end_verified")
+    # every checked number while collecting; the empty tail is trimmed once finished
+    lo, hi = store.export_bounds(prefix, trim_tail=bool(verified))
+    stats = store.stats(prefix)
 
     wb = Workbook(write_only=True)
     ws = wb.create_sheet(MAIN_SHEET)

@@ -164,8 +164,10 @@ pressing Start.
 
 The workbook has three sheets:
 
-* **GOC Register**: columns A–E exactly as above, one row per GOC number from the first number
-  to the highest registered number, in order, none skipped.
+* **GOC Register**: columns A–E exactly as above, one row per GOC number, in order, none skipped:
+  while collecting (or stopped part-way) up to the last number checked, so every checked number
+  is visible (`Data not available` for numbers with no record); once the collection has finished,
+  the long run of empty numbers after the last registrant is left out.
 * **Collection Status**: processing status of every number (`found`, `partial`, `no_record`,
   `error`), when it was checked, and any error. This makes exact resuming possible from the
   Excel file alone (for example on a computer without the database file).

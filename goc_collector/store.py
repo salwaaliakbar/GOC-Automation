@@ -229,9 +229,11 @@ class RecordStore:
 
     # ------------------------------------------------------------ writes
     def save_result(self, goc: str, status: str, data: dict | None = None,
-                    error: str | None = None) -> None:
+                    error: str | None = None, count_attempt: bool = True) -> None:
         """Store a web search result immediately. A failed search never
-        downgrades a number that was already resolved."""
+        downgrades a number that was already resolved. ``count_attempt=False``
+        is used when the user stopped the collection: that is not the website's
+        fault and does not count towards ``MAX_ATTEMPTS``."""
         prefix, seq, _ = gn.parse(goc)
         data = data or {}
         with self.transaction():
@@ -246,7 +248,7 @@ class RecordStore:
             rec = {"goc_number": goc, "prefix": prefix, "seq": seq,
                    "processing_status": status, "last_checked": now_iso(),
                    "error_message": error,
-                   "attempts": (cur["attempts"] if cur else 0) + 1}
+                   "attempts": (cur["attempts"] if cur else 0) + (1 if count_attempt else 0)}
             for k in FIELDS + EXTRA_FIELDS:
                 rec[k] = data.get(k) if status in HAS_DATA else None
             self._put(rec)
@@ -295,6 +297,24 @@ class RecordStore:
         hi = self._one("SELECT MAX(seq) FROM records WHERE prefix = ? AND processing_status IN (?, ?)",
                        (prefix, *HAS_DATA))[0]
         return lo, hi
+
+    def export_bounds(self, prefix: str, trim_tail: bool = False) -> tuple[int | None, int | None]:
+        """Rows that belong in the Excel file.
+
+        * While collecting (or stopped part-way): from the lowest number up to the
+          last number checked, so every checked number is visible - including
+          "no record" numbers - even before anyone was found.
+        * ``trim_tail`` (collection finished, end of register verified): the long
+          run of empty numbers after the last registrant is left out; the rows end
+          at the highest number with a record or one that still needs work.
+        """
+        lo = self._one("SELECT MIN(seq) FROM records WHERE prefix = ?", (prefix,))[0]
+        last_checked = self._one("SELECT MAX(seq) FROM records WHERE prefix = ?", (prefix,))[0]
+        if not trim_tail:
+            return lo, last_checked
+        hi = self._one("SELECT MAX(seq) FROM records WHERE prefix = ? AND processing_status "
+                       "IN (?, ?, ?, ?)", (prefix, FOUND, PARTIAL, ERROR, PENDING))[0]
+        return lo, (hi if hi is not None else last_checked)
 
     def statuses_between(self, prefix: str, lo: int, hi: int) -> dict[int, str]:
         rows = self._all("SELECT seq, processing_status FROM records "

@@ -128,3 +128,36 @@ def test_excel_rebuilt_when_database_is_newer(tmp_path):
     xlsx.unlink()
     col.save_now("test")
     assert xlsx.exists() and col.excel_up_to_date()
+
+
+def test_excel_shows_every_checked_number_even_when_nobody_was_found_yet(tmp_path):
+    """Regression: a run with only empty numbers so far gave an empty Excel file."""
+    xlsx = tmp_path / "GOC_Register.xlsx"
+    s = RecordStore()
+    for seq in range(11200, 11206):
+        s.save_result(gn.fmt(seq), NO_RECORD)        # 6 checked, nobody found yet
+    save_workbook(s, xlsx)
+    rows = rows_of(xlsx)
+    assert list(rows) == [gn.fmt(x) for x in range(11200, 11206)]
+    from goc_collector import NOT_AVAILABLE, SEARCH_FAILED
+    assert rows["01-11200"][1:] == (NOT_AVAILABLE,) * 4
+
+    s.save_result("01-11206", ERROR, error="timeout")
+    for seq in range(11207, 11215):
+        s.save_result(gn.fmt(seq), NO_RECORD)
+    save_workbook(s, xlsx)
+    rows = rows_of(xlsx)
+    assert list(rows) == [gn.fmt(x) for x in range(11200, 11215)]   # up to the last checked
+    assert rows["01-11206"][1] == SEARCH_FAILED
+
+    s.meta["end_verified"] = True                    # finished: the empty tail is trimmed
+    save_workbook(s, xlsx)
+    assert list(rows_of(xlsx)) == [gn.fmt(x) for x in range(11200, 11207)]
+
+
+def test_stop_does_not_count_as_a_failed_attempt():
+    s = RecordStore()
+    s.save_result("01-11200", ERROR, error="cancelled by user", count_attempt=False)
+    assert s.get("01-11200")["attempts"] == 0
+    s.save_result("01-11200", ERROR, error="timeout")
+    assert s.get("01-11200")["attempts"] == 1

@@ -332,7 +332,9 @@ class Collector:
     # ----------------------------------------------------------- results
     def _record(self, goc: str, status: str, data: dict | None, err: str | None) -> None:
         """Store one number's result and update the live counters immediately."""
-        self.store.save_result(goc, status, data, err)
+        # a step cut short by Stop is not the website's fault: no attempt counted
+        stopped = status == ERROR and self._stop.is_set()
+        self.store.save_result(goc, status, data, err, count_attempt=not stopped)
         pr = self.progress
         seq = gn.parse(goc)[1]
         with self._rec_lock:
