@@ -17,76 +17,52 @@ For every GOC number, the Excel file shows:
 
 # Step-by-step guide
 
-## Part 1 – Set up the computer (only once)
+## Part 1 – First time on a computer
 
-You only need to do this **once per computer**.
+**1. Install Python** (free, needed only once per computer)
+   * Go to <https://www.python.org/downloads/> and click **Download Python**.
+   * Open the downloaded file.
+   * ✅ **Tick "Add python.exe to PATH"** at the bottom of the window. (Very important.)
+   * Click **Install Now**, wait for *"Setup was successful"*, then click **Close**.
 
-**Step 1 – Install Python** (a free program the collector needs)
+**2. Download the collector**
+   * Download the project **ZIP file** you received.
+   * Right-click the ZIP file → **Extract All…** → **Extract**.
+   * Move the extracted folder to your **Desktop**.
 
-1. Open this page: <https://www.python.org/downloads/>
-2. Click the big yellow **Download Python** button.
-3. Open the file you downloaded.
-4. **Important:** at the bottom of the first window, tick the box
-   **"Add python.exe to PATH"**.
-5. Click **Install Now** and wait until it says *"Setup was successful"*. Click **Close**.
+**3. Start it**
+   * Open the folder and **double-click `run_dashboard.bat`**.
+   * A black window opens. The first time, it installs what it needs by itself
+     (about 1 minute, internet needed). You don't have to type anything.
+   * The collector then opens in your web browser.
 
-**Step 2 – Put the collector folder on the computer**
-
-Copy the whole collector folder (the one that contains this guide) somewhere easy to find,
-for example your **Desktop**.
-
-That's all. The first time you start the collector (Part 2), it finishes the setup by itself.
-This takes about a minute and needs an internet connection.
-
----
+> If Windows says *"Windows protected your PC"*: click **More info** → **Run anyway**.
 
 ## Part 2 – Collect the data
 
-**Step 1 – Start the collector**
+1. Double-click **`run_dashboard.bat`** (skip this if it is already open).
+   **Keep the black window open** while collecting (you can minimise it).
+2. In the browser, leave **"Start from GOC number"** at **`01-11200`** and press
+   **▶ Start collecting**. (Later times, the button says **▶ Continue collecting**.)
+3. Let it run. The screen updates every second. A message like *"The register website is busy …
+   continues automatically in 1:45"* is **normal**. Just leave it.
+4. Need a break? Press **■ Stop**, or simply close the windows. **Nothing is lost.** Next time,
+   double-click `run_dashboard.bat` and press **▶ Continue collecting**.
+5. When it says **"Finished – all available records collected"**, press **⬇ Download Excel**.
+   The file goes to your **Downloads** folder.
 
-Open the collector folder and **double-click `run_dashboard.bat`**.
+> **⬇ Download Excel** works at any time, also during collecting, to see what has been
+> collected so far.
 
-* A **black window** opens. **Leave it open** the whole time. You can minimise it, but do not
-  close it.
-* After a few seconds, the collector opens in your **web browser**.
+## Only if the black window says *"Installation failed"*
 
-> If Windows shows a blue box saying *"Windows protected your PC"*, click **More info**, then
-> **Run anyway**.
-
-**Step 2 – Press Start**
-
-* **The first time**, you see a box *"Start from GOC number"* with **`01-11200`** already filled
-  in. **Leave it as it is** and press the green **▶ Start collecting** button.
-* **Any later time**, the button says **▶ Continue collecting**. Press it and the collector
-  carries on from where it stopped.
-
-**Step 3 – Let it run**
-
-The screen updates by itself every second. It shows:
-
-* what it is doing right now, for example *"Reading the details of 01-12305 (Jane Smith)"*;
-* the GOC number it has reached, how many numbers were checked, and how many optometrists were found;
-* a list of the latest numbers checked.
-
-Sometimes it says *"The register website is busy … it will continue automatically in 1:45"*.
-**This is normal.** The collector gives the website a short rest. Just leave it running.
-
-**Step 4 – Take a break whenever you like**
-
-* **❚❚ Pause** – stops for a moment. Press **▶ Continue** to carry on.
-* **■ Stop** – stops completely. Next time, press **▶ Continue collecting**.
-* You may even **close the browser and the black window**, or switch off the computer.
-
-**Nothing is ever lost.** Every result is saved the moment it arrives.
-
-**Step 5 – Get your Excel file**
-
-When the screen says **"Finished – all available records collected"**, press the blue
-**⬇ Download Excel** button. The file is saved in your **Downloads** folder with today's date,
-for example `GOC_Register_2026-11-05.xlsx`.
-
-You can also press **⬇ Download Excel** at any time **during** the collection to see what has
-been collected so far.
+1. Check the internet connection.
+2. Open the collector folder, click the **address bar** at the top, type `cmd` and press **Enter**.
+3. In the black window that opens, type this and press **Enter**:
+   ```
+   python -m pip install -r requirements.txt
+   ```
+4. Wait until it finishes, close that window, and double-click `run_dashboard.bat` again.
 
 ---
 
@@ -94,9 +70,8 @@ been collected so far.
 
 On a new computer, the collector **starts from the very beginning (GOC number `01-11200`)**.
 
-1. Do **Part 1** on the new computer (install Python, copy the collector folder).
-2. Do **Part 2**. You will see *"Start from GOC number: 01-11200"*. **Leave it as it is** and
-   press **▶ Start collecting**.
+1. Do **Part 1** on the new computer.
+2. Do **Part 2**, leaving **"Start from GOC number"** at **`01-11200`**.
 
 You do not need to copy or upload anything.
 
@@ -150,8 +125,8 @@ The **"Your data"** box on the screen always tells you whether the Excel file is
 
 | What you see | What to do |
 |---|---|
-| *"Python is not installed on this computer"* in the black window | Do **Part 1, Step 1** again and make sure you tick **"Add python.exe to PATH"**. |
-| *"Installation failed"* in the black window | Check the internet connection, close the black window, and double-click `run_dashboard.bat` again. |
+| *"Python is not installed on this computer"* in the black window | Do **Part 1, step 1** again and make sure you tick **"Add python.exe to PATH"**. |
+| *"Installation failed"* in the black window | See **"Only if the black window says Installation failed"** above. |
 | The browser says *"Cannot reach the collector"* | The black window was closed. Double-click `run_dashboard.bat` again. Nothing is lost. |
 | The browser page did not open | Open your browser and go to **http://127.0.0.1:8000** |
 | *"The collection is already running in another window"* | The collector is already open. Look for the other browser tab or black window. |
